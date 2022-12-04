@@ -73,6 +73,19 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:id="@+id/deleteBtnText"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:visibility="gone"/>
+
+
+
 
 
 </RelativeLayout>

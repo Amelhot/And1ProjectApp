@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.speech.tts.UtteranceProgressListener;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ public class NoteInfoActivity extends AppCompatActivity {
     TextView titlePageTxtV;
     String title, content, docID;
     boolean isCheckCurrent = false;
-
+    TextView deleteNoteBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class NoteInfoActivity extends AppCompatActivity {
         contentEditText = findViewById(R.id.noteContentTxt);
         saveNoteBtn = findViewById(R.id.checkSaveBtn);
         titlePageTxtV = findViewById(R.id.titlePage);
+        deleteNoteBtn = findViewById(R.id.deleteBtnText);
 
         //Get data
         title = getIntent().getStringExtra("title");
@@ -47,10 +49,13 @@ public class NoteInfoActivity extends AppCompatActivity {
         contentEditText.setText(content);
         if (isCheckCurrent){
             titlePageTxtV.setText("Edit note");
+            deleteNoteBtn.setVisibility(View.VISIBLE);
         }
 
 
         saveNoteBtn.setOnClickListener((v)-> saveNote());
+
+        deleteNoteBtn.setOnClickListener((v) -> deleteNoteFromFirebase());
 
 
     }
@@ -90,6 +95,27 @@ public class NoteInfoActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     //Added note
                     Utility.showToast(NoteInfoActivity.this, "Notes Added!");
+                    finish();
+
+                }else{
+                    Utility.showToast(NoteInfoActivity.this,"Adding note failed");
+                }
+
+            }
+        });
+
+    }
+    void deleteNoteFromFirebase(){
+
+        DocumentReference documentReference;
+
+        documentReference = Utility.getCollectionReferenceForNotes().document(docID);
+        documentReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    //Deleted note
+                    Utility.showToast(NoteInfoActivity.this, "Notes deleted!");
                     finish();
 
                 }else{
