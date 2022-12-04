@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.speech.tts.UtteranceProgressListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -18,6 +19,9 @@ public class NoteInfoActivity extends AppCompatActivity {
     EditText titleEditText;
     EditText contentEditText;
     ImageButton saveNoteBtn;
+    TextView titlePageTxtV;
+    String title, content, docID;
+    boolean isCheckCurrent = false;
 
 
     @Override
@@ -28,6 +32,22 @@ public class NoteInfoActivity extends AppCompatActivity {
         titleEditText = findViewById(R.id.noteTitleTxt);
         contentEditText = findViewById(R.id.noteContentTxt);
         saveNoteBtn = findViewById(R.id.checkSaveBtn);
+        titlePageTxtV = findViewById(R.id.titlePage);
+
+        //Get data
+        title = getIntent().getStringExtra("title");
+        content = getIntent().getStringExtra("content");
+        docID = getIntent().getStringExtra("docId");
+
+        if (docID != null && !docID.isEmpty()){
+            isCheckCurrent = true;
+        }
+
+        titleEditText.setText(title);
+        contentEditText.setText(content);
+        if (isCheckCurrent){
+            titlePageTxtV.setText("Edit note");
+        }
 
 
         saveNoteBtn.setOnClickListener((v)-> saveNote());
@@ -52,7 +72,17 @@ public class NoteInfoActivity extends AppCompatActivity {
 
     void saveNoteToFirebase(Note note){
         DocumentReference documentReference;
-        documentReference = Utility.getCollectionReferenceForNotes().document();
+        if (isCheckCurrent){
+        // Edit Note
+            documentReference = Utility.getCollectionReferenceForNotes().document(docID);
+
+
+        }else{
+            //Create Note
+            documentReference = Utility.getCollectionReferenceForNotes().document();
+
+        }
+
 
         documentReference.set(note).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
